@@ -1,11 +1,20 @@
-// The Index object:
+// inverted-index
+// Hannah Cherono Koske
+
+
+// INDEX OBJECT:
 //    creates an inverted index of the words of the objects of a json file
-// Variables:
+// PROPERTIES:
 //    path of json file, index of json file, results of search on index, json values of json File and reference to itself
-// Methods:
-//    createIndex(path, cb) to create an index given the path of the json file and a callback for when asynchronous call is done executing
-//    getIndex(): returns the current index as an object but also accepts the path of a jason file and returns the index
-//
+// METHODS:
+//    createIndex(path, cb): to create an index given the path of the json file and a callback 
+//    for when asynchronous call is done executing
+//    getIndex(): returns the current index as an object but also accepts the path of a jason 
+//    file and returns the index
+//    printIndex(): prints index to console
+//    searchIndex(): searches the index for the terms specified as arguments
+//    checkItem(): checks whether the item passed as an argument exists in the index
+
 function Index() {
   this.path = "";
   this.index = [];
@@ -64,8 +73,6 @@ function Index() {
     return this.results;
   };
 
-
-
   this.checkItem = function(term) {
     for (var item of this.index) {
       if (item.indexOf(term) != -1)
@@ -73,11 +80,9 @@ function Index() {
     }
     return false;
   };
-
-
-
 }
 
+//  converts json string file into an array of keys and values
 var returnJsonData = function(jsonFile) {
   var jsonValues = [];
   JSON.parse(jsonFile, function(k, v) {
@@ -90,6 +95,7 @@ var returnJsonData = function(jsonFile) {
   return jsonValues;
 };
 
+//  checks whether the item/index passed is empty 
 var checkEmpty = function(item) {
   if (item.length === 0)
     return true;
@@ -97,6 +103,7 @@ var checkEmpty = function(item) {
     return false;
 };
 
+//  converts an array of words from their current case to lower case
 var toLower = function(words) {
   for (var j = 0, n = words.length; j < n; j++) {
     words[j] = words[j].trim().toLowerCase();
@@ -104,14 +111,15 @@ var toLower = function(words) {
   return words;
 };
 
+//  splits text in a json file into an array of words
 var toWords = function(jsonFile) {
   // an array to hold the unique words found in the various texts
   var uniqueWords = [];
-  /* loops through all the texts in the json object
-   * splits the text into an array of words
-   * removes any empty strings that are generated as a result of splitting
-   * appends the words to uniqueWords
-   */
+
+  // loops through all the texts in the json object
+  // splits the text into an array of words
+  // removes any empty strings that are generated as a result of splitting
+  // appends the words to uniqueWords
   for (var i = 0; i < jsonFile.length; i++) {
     var words = jsonFile[i][1].trim().split(" ");
     while (words.indexOf("") != -1) {
@@ -123,13 +131,13 @@ var toWords = function(jsonFile) {
   return uniqueWords;
 };
 
+//  removes duplicates that occur in an array of words
 var removeDuplicates = function(uniqueWords) {
   // sorts the array of unique
   uniqueWords.sort();
 
-  /* loops through all the words in the uniqueWords array
-   * removes all duplicate words
-   */
+  // loops through all the words in the uniqueWords array
+  // removes all duplicate words
   var firstOcc, lastOcc;
   for (var j = 0; j < uniqueWords.length; j++) {
     firstOcc = j;
@@ -141,6 +149,7 @@ var removeDuplicates = function(uniqueWords) {
   return uniqueWords;
 };
 
+// removes basic punctuation from items of an array of words 
 var removePunctuation = function(uniqueWords) {
   for (var i = 0, n = uniqueWords.length; i < n; i++) {
     uniqueWords[i] = (uniqueWords[i].replace(',', '')).replace('.', '').replace('/', '').replace('?', '').replace('\"', '').replace('\'', '');
@@ -148,14 +157,14 @@ var removePunctuation = function(uniqueWords) {
   return uniqueWords;
 };
 
+//  creates the index of words
 var showOccurences = function(jsonFile, uniqueWords) {
   // array that hold the occurences of the uniqueWords in the various texts in the jsonFile
   var wordOccurences = [];
 
-  /* loops through all the strings in uniqueWords
-   * nests a loop in the above loops to loop through texts in the jsonFile
-   * checks whether any of the strings in uniqueWords occur in the texts in the jsonFile
-   */
+  // loops through all the strings in uniqueWords
+  // nests a loop in the above loops to loop through texts in the jsonFile
+  // checks whether any of the strings in uniqueWords occur in the texts in the jsonFile
   for (var k = 0, n = uniqueWords.length; k < n; k++) {
     var wordOcc = [uniqueWords[k]],
       occ;
@@ -169,10 +178,10 @@ var showOccurences = function(jsonFile, uniqueWords) {
     }
     wordOccurences.push(wordOcc);
   }
-
   return wordOccurences;
 };
 
+//  used to structure keys and values of a json file
 var toStructure = function(array) {
   var result = [];
   for (var i = 0, n = array.length; i < n; i += 2) {
@@ -181,6 +190,7 @@ var toStructure = function(array) {
   return result;
 };
 
+//  used to search terms through the index
 var searching = function(json, index, terms) {
   if (checkEmpty(json) !== true) {
     var results = [];
